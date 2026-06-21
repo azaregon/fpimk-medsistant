@@ -22,12 +22,12 @@ const router = createRouter({
     },
     {
       path: '/jadwal',
-      name: 'about',
+      name: 'jadwal',
       component: () => import('../views/Jadwal/List/JadwalList.vue'),
     },
     {
       path: '/jadwal/item',
-      name: 'about',
+      name: 'jadwal-item',
       // component: () => import('../views/AboutView.vue'),
     },
     {
