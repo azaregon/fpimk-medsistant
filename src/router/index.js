@@ -30,6 +30,11 @@ const router = createRouter({
       name: 'about',
       // component: () => import('../views/AboutView.vue'),
     },
+    {
+      path: '/camera',
+      name: 'camera',
+      component: () => import('../views/Camera/Camera.vue'),
+    },
   ],
 })
 
