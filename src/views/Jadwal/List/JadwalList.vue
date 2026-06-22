@@ -2,6 +2,11 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Pill } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import { usePointerSwipe, 
+    useEventListener, 
+    useSpeechSynthesis,
+    onLongPress
+} from '@vueuse/core'
 
 const router = useRouter()
 const base_url = 'http://127.0.0.1:5000'
@@ -12,6 +17,15 @@ const mockSchedules = [
   { id: 3, name: 'Sirup Batuk', time: '14:00', dose: '15ml', qty: '1 Sendok Makan' },
   { id: 4, name: 'Vitamin C', time: '18:00', dose: '1000mg', qty: '2 Pil' },
 ]
+
+var str_jadwal_tersedia = ""
+mockSchedules.forEach((e, i, a) => {
+    str_jadwal_tersedia += `Obat ${e.name} dosis ${e.dose} sebanyak ${e.qty}`
+})
+
+
+var { isSupported, isSpeaking, speak, stop } = useSpeechSynthesis(str_jadwal_tersedia, {lang: 'id-ID', rate: 1.3})
+speak()
 
 const schedules = ref([...mockSchedules])
 
