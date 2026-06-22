@@ -111,24 +111,41 @@ function stopSpeech() {
 }
 
 function speakText(text, bubbleKey, onEnd) {
-  stopSpeech()
-  const utter = new SpeechSynthesisUtterance(text)
-  utter.lang = 'id-ID'
-  utter.rate = 1.0
+  // Cancel any ongoing speech first
+  window.speechSynthesis.cancel()
+  currentUtterance = null
+
+  // Set the active bubble immediately so the UI responds right away
   currentBubble.value = bubbleKey
-  currentUtterance = utter
-  utter.onend = () => {
-    if (currentBubble.value === bubbleKey) {
-      currentBubble.value = null
-      currentUtterance = null
+
+  // Use a short delay after cancel() before speak() — this is the standard
+  // workaround for the Chrome/mobile Web Speech API bug where the engine
+  // gets stuck after the first utterance and ignores subsequent speak() calls.
+  setTimeout(() => {
+    // Guard: if the user already cancelled while we were waiting, bail out
+    if (currentBubble.value !== bubbleKey) return
+
+    const utter = new SpeechSynthesisUtterance(text)
+    utter.lang = 'id-ID'
+    utter.rate = 1.0
+    currentUtterance = utter
+
+    utter.onend = () => {
+      if (currentBubble.value === bubbleKey) {
+        currentBubble.value = null
+        currentUtterance = null
+      }
+      if (onEnd) onEnd()
     }
-    if (onEnd) onEnd()
-  }
-  utter.onerror = () => {
-    currentBubble.value = null
-    currentUtterance = null
-  }
-  window.speechSynthesis.speak(utter)
+    utter.onerror = () => {
+      if (currentBubble.value === bubbleKey) {
+        currentBubble.value = null
+        currentUtterance = null
+      }
+    }
+
+    window.speechSynthesis.speak(utter)
+  }, 150)
 }
 
 // Single bubble tap handler
