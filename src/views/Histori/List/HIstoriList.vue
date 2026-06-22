@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const base_url = 'http://127.0.0.1:5000'
 
-// Sample history data — in a real app this would come from localStorage / backend
-const historyItems = ref([
+// Mock history data as fallback
+const mockHistory = [
   {
     id: 1,
     name: 'Imboost',
@@ -90,7 +91,34 @@ const historyItems = ref([
     peringatan: 'Harus dengan resep dokter. Hentikan jika terjadi gejala asidosis laktat. Tidak untuk pasien gagal ginjal berat.',
     penyimpanan: 'Simpan pada suhu kamar (15–30°C), jauh dari kelembapan dan panas.',
   },
-])
+// End of mockHistory array
+]
+const historyItems = ref([...mockHistory])
+
+const fetchHistory = async () => {
+  const use_backend = localStorage.getItem('use_backend') === 'true'
+  if (use_backend) {
+    try {
+      const response = await fetch(`${base_url}/api/history`)
+      const data = await response.json()
+      historyItems.value = data
+    } catch (e) {
+      console.error('Failed to fetch history from backend:', e)
+      historyItems.value = [...mockHistory]
+    }
+  } else {
+    historyItems.value = [...mockHistory]
+  }
+}
+
+onMounted(() => {
+  fetchHistory()
+  window.addEventListener('use-backend-changed', fetchHistory)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('use-backend-changed', fetchHistory)
+})
 
 const goToDetail = (item) => {
   router.push({ path: `/histori/${item.id}` })

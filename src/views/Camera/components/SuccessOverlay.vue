@@ -39,10 +39,10 @@ const saveToBackendAndRedirect = async () => {
       const base_url = 'http://127.0.0.1:5000'
       const payload = {
         name: props.medicineData?.brand || 'Obat Baru',
-        time: props.medicineData?.schedule?.interval_h ? `${props.medicineData.schedule.interval_h}:00` : '08:00',
+        time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
         dose: props.medicineData?.dosage || '1 Tablet',
         qty: '1 Pcs',
-        all_desc: props.toread
+        interval_h: props.medicineData?.schedule?.interval_h || 0,
       }
       await fetch(`${base_url}/api/schedules`, {
         method: 'POST',

@@ -1,26 +1,47 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { Bell, Clock, Sun, Cloud } from 'lucide-vue-next'
 
 const route = useRoute()
+const base_url = 'http://127.0.0.1:5000'
 
-// Mengambil nama obat dari URL query (dari halaman list)
+// Get schedule id from route params (fallback to query)
+const scheduleId = Number(route.params.id) || null
 const medicineName = route.query.name || 'Mefinal'
 
-// Data tiruan (mockup) untuk detail obat
 const medicine = ref({
-  image: 'https://placehold.co/600x400/pink/white?text=Gambar+Obat', // Ganti dengan path/URL gambar asli Anda
-  nextDose: {
-    countdown: '04:05:33',
-    time: '13:00',
-    period: 'Siang',
-    instruction: 'Sesudah Makan'
-  },
-  schedules: [
-    { id: 1, time: '08:00 AM', period: 'Pagi', instruction: 'Sesudah Makan', icon: 'sun', isActive: true },
-    { id: 2, time: '01:00 PM', period: 'Siang', instruction: 'Sesudah Makan', icon: 'cloud', isActive: true }
-  ]
+  image: 'https://placehold.co/600x400/pink/white?text=Gambar+Obat',
+  nextDose: { countdown: '04:05:33', time: '13:00', period: 'Siang', instruction: 'Sesudah Makan' },
+  schedules: []
+})
+const allSchedules = ref([])
+
+const fetchDetail = async () => {
+  const use_backend = localStorage.getItem('use_backend') === 'true'
+  if (!use_backend) return
+  try {
+    if (scheduleId) {
+      // Fetch the specific schedule detail (contains generated time slots)
+      const resp = await fetch(`${base_url}/api/schedules/${scheduleId}`)
+      const data = await resp.json()
+      medicine.value.image = data.image || medicine.value.image
+      if (data.nextDose) medicine.value.nextDose = data.nextDose
+      // Use the detail's generated schedules (e.g. 20:38, 22:38, 00:38 ...)
+      if (data.schedules) medicine.value.schedules = data.schedules
+    }
+  } catch (e) {
+    console.error('Failed to fetch schedule data', e)
+  }
+}
+
+onMounted(() => {
+  fetchDetail()
+  window.addEventListener('use-backend-changed', fetchDetail)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('use-backend-changed', fetchDetail)
 })
 </script>
 
