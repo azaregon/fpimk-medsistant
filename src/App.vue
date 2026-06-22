@@ -6,21 +6,36 @@ import { ArrowLeft } from 'lucide-vue-next' // Import icon panah
 const route = useRoute()
 const router = useRouter()
 
+// Shared history names for title lookup
+const historyNames = {
+  1: 'Imboost',
+  2: 'Paracetamol',
+  3: 'Panadol',
+  4: 'Ambroxol',
+  5: 'Diapet',
+  6: 'Metformin',
+}
+
 // Cek apakah saat ini sedang di halaman utama (Home)
-// Catatan: Sesuaikan '/' jika route home Anda berbeda namanya
 const isHome = computed(() => route.path === '/')
 
 // Ubah judul otomatis berdasarkan halaman saat ini
 const pageTitle = computed(() => {
+  // Detail histori — show medicine name
+  if (route.path.startsWith('/histori/') && route.params.id) {
+    const id = Number(route.params.id)
+    return historyNames[id] || 'Detail Obat'
+  }
+
   // Jika URL adalah detail jadwal (mengandung ID)
   if (route.path.startsWith('/jadwal/') && route.path !== '/jadwal') {
-    return route.query.name || 'Detail Obat' // Ambil nama dari URL query
+    return route.query.name || 'Detail Obat'
   }
-  
+
   if (route.path === '/jadwal') return 'Jadwal Obat'
-  if (route.path.includes('/histori')) return 'Histori'
+  if (route.path === '/histori') return 'Histori'
   if (route.path.includes('/camera')) return 'Kamera'
-  
+
   return 'MedSistant' // Default untuk home
 })
 </script>
@@ -30,7 +45,7 @@ const pageTitle = computed(() => {
     <div class="flex flex-col-reverse rounded-xl w-md h-full bg-linear-to-br from-blue-500 to-blue-700 overflow-clip">
       
       <!-- Area Putih (RouterView) -->
-      <div class="rounded-t-[5rem] bg-slate-100 h-[90%] px-6 pt-10 pb-10 overflow-clip">
+      <div class="rounded-t-[5rem] bg-white h-[90%] px-6 pt-10 pb-10 overflow-clip">
         <RouterView class=" overflow-clip h-full"/>
       </div>
 
