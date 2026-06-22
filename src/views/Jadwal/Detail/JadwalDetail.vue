@@ -25,14 +25,12 @@ const medicine = ref({
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full font-body pt-2 space-y-5 overflow-y-auto pb-10">
+  <div class="flex flex-col w-full h-full font-body pt-2 px-6 gap-6 overflow-y-auto pb-10">
 
-    <!-- Foto Obat -->
     <div class="w-full h-48 rounded-2xl overflow-hidden shadow-sm border border-gray-200 shrink-0">
       <img :src="medicine.image" alt="Foto Obat" class="w-full h-full object-cover" />
     </div>
 
-    <!-- Card: Minum Berikutnya -->
     <div class="bg-[#F5F7FF] border-l-[5px] border-[#3b82f6] rounded-2xl p-4 shadow-sm relative shrink-0">
       <div class="flex justify-between items-start mb-1">
         <div>
@@ -52,35 +50,30 @@ const medicine = ref({
       </p>
     </div>
 
-    <!-- Section: Jadwal Harian -->
     <div class="flex flex-col gap-3 shrink-0 pt-2">
       <div class="flex justify-between items-center px-1">
         <h3 class="font-bold text-black text-[17px]">Jadwal Harian</h3>
-        <button class="text-[#3b82f6] text-sm font-bold hover:opacity-80">Ubah Semua</button>
+        <button class="text-[#3b82f6] text-sm font-bold hover:opacity-80 cursor-pointer">Ubah Semua</button>
       </div>
 
-      <!-- List Waktu Minum -->
       <div v-for="sched in medicine.schedules" :key="sched.id"
            class="bg-[#F5F7FF] border border-blue-100/50 rounded-2xl p-4 flex items-center justify-between shadow-sm">
 
         <div class="flex items-center gap-4">
-          <!-- Ikon Waktu (Pagi/Siang) -->
           <div class="bg-[#3b82f6] p-2.5 rounded-full text-white shadow-sm">
             <Sun v-if="sched.icon === 'sun'" class="w-6 h-6" :stroke-width="2.5" />
             <Cloud v-else-if="sched.icon === 'cloud'" class="w-6 h-6" :stroke-width="2.5" />
           </div>
 
-          <!-- Keterangan Waktu -->
           <div class="flex flex-col">
             <span class="font-bold text-black text-[15px] mb-0.5">{{ sched.time }}</span>
             <span class="text-xs text-gray-600 font-medium">{{ sched.period }} - {{ sched.instruction }}</span>
           </div>
         </div>
 
-        <!-- Tombol Toggle (On/Off) -->
         <button @click="sched.isActive = !sched.isActive"
                 :class="sched.isActive ? 'bg-[#3b82f6]' : 'bg-gray-300'"
-                class="w-12 h-[26px] rounded-full flex items-center px-1 transition-colors duration-300 ease-in-out cursor-pointer">
+                class="w-12 h-[26px] rounded-full flex items-center px-1 transition-colors duration-300 ease-in-out cursor-pointer border-none outline-none">
           <div :class="sched.isActive ? 'translate-x-5' : 'translate-x-0'"
                class="bg-white w-5 h-5 rounded-full shadow-sm transform transition-transform duration-300 ease-in-out"></div>
         </button>
