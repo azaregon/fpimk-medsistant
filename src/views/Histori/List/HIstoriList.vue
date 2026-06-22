@@ -73,7 +73,7 @@ speak()
   <div class="flex flex-col w-full h-full">
 
     <!-- Header -->
-    <div class="flex items-center gap-3 mb-5">
+    <div class="flex items-center space-y-3 mb-5">
       <button
         @click="goBack"
         class="p-2 rounded-2xl bg-[#FCAF33]/15 active:scale-90 transition-transform duration-100 cursor-pointer"

@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView, useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { ArrowLeft } from 'lucide-vue-next' // Import icon panah
 
 const route = useRoute()
@@ -23,6 +23,15 @@ const pageTitle = computed(() => {
   
   return 'MedSistant' // Default untuk home
 })
+
+// State untuk toggle backend
+const useBackend = ref(localStorage.getItem('use_backend') === 'true')
+
+const toggleBackend = () => {
+  useBackend.value = !useBackend.value
+  localStorage.setItem('use_backend', useBackend.value ? 'true' : 'false')
+  window.dispatchEvent(new Event('use-backend-changed'))
+}
 </script>
 
 <template>
@@ -47,8 +56,15 @@ const pageTitle = computed(() => {
         <span class="text-3xl font-black font-heading text-white">
           {{ pageTitle }}
         </span>
+
+        <!-- Toggle Backend (use_backend) -->
+        <button @click="toggleBackend" 
+                class="absolute right-6 flex items-center gap-1.5 text-white bg-white/10 hover:bg-white/20 px-2.5 py-1.5 rounded-full text-xs font-bold border border-white/25 cursor-pointer select-none active:scale-95 transition-all duration-100">
+          <span :class="useBackend ? 'text-emerald-400' : 'text-rose-400'">●</span>
+          <span>Backend: {{ useBackend ? 'ON' : 'OFF' }}</span>
+        </button>
         
       </div>
     </div>
   </div>
-</template>
+</template>

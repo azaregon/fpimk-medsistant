@@ -14,6 +14,10 @@ const props = defineProps({
   toread: {
     type: String,
     required: true
+  },
+  medicineData: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -23,18 +27,36 @@ speak()
 
 const toread = props.toread
 
-// const toread = `Berikut adalah deskripsi mengenai obat Mefinal:
-// Kandungan Aktif: Asam mefenamat (Mefenamic acid).
-// Golongan: Obat Anti-Inflamasi Non-Steroid (OAINS). Di Indonesia, obat ini termasuk dalam kategori obat keras (berlogo lingkaran merah) sehingga penggunaannya harus menggunakan resep dokter.
-// Indikasi dan Kegunaan: Berfungsi untuk meredakan nyeri ringan hingga sedang dan mengurangi peradangan. Mefinal umum digunakan untuk mengatasi sakit gigi, sakit kepala, nyeri haid (dismenore), nyeri otot, nyeri sendi, serta nyeri pasca operasi atau cedera.
-// Cara Kerja: Obat ini bekerja dengan cara menghambat produksi prostaglandin, yaitu zat kimia alami dalam tubuh yang memicu rasa sakit dan reaksi peradangan saat terjadi kerusakan jaringan.
-// Perhatian Penggunaan: Mefinal sangat disarankan untuk dikonsumsi setelah makan guna mencegah atau meminimalkan efek samping pada saluran pencernaan, seperti iritasi lambung atau mual.
-// Catatan: Informasi ini hanya untuk tujuan edukasi. Selalu konsultasikan dengan dokter atau apoteker dan ikuti dosis yang diresepkan sebelum mengonsumsi obat ini.`
-
 var { isSupported, isPlaying, speak, stop } = useSpeechSynthesis(toread, { lang: 'id-ID' })
 
 const swipe_elem = useTemplateRef('swipe_elem')
 const { isSwiping, direction } = usePointerSwipe(swipe_elem)
+
+const saveToBackendAndRedirect = async () => {
+  const use_backend = localStorage.getItem('use_backend') === 'true'
+  if (use_backend) {
+    try {
+      const base_url = 'http://127.0.0.1:5000'
+      const payload = {
+        name: props.medicineData?.brand || 'Obat Baru',
+        time: props.medicineData?.schedule?.interval_h ? `${props.medicineData.schedule.interval_h}:00` : '08:00',
+        dose: props.medicineData?.dosage || '1 Tablet',
+        qty: '1 Pcs',
+        all_desc: props.toread
+      }
+      await fetch(`${base_url}/api/schedules`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+    } catch (e) {
+      console.error("Failed to save schedule to backend:", e)
+    }
+  }
+  router.push("/jadwal")
+}
 
 watch(direction, (newval, oldval) => {
     if (newval == "right") {
@@ -42,7 +64,7 @@ watch(direction, (newval, oldval) => {
         router.push("/")
     } else if (newval == "left") {
         console.log("left")
-        router.push("/jadwal")
+        saveToBackendAndRedirect()
     }
 })
 

@@ -1,15 +1,44 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Pill } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const base_url = 'http://127.0.0.1:5000'
 
-const schedules = [
+const mockSchedules = [
   { id: 1, name: 'Paracetamol', time: '08:00', dose: '500mg', qty: '1 Tablet' },
   { id: 2, name: 'Amoxicillin', time: '12:00', dose: '250mg', qty: '1 Kapsul' },
   { id: 3, name: 'Sirup Batuk', time: '14:00', dose: '15ml', qty: '1 Sendok Makan' },
   { id: 4, name: 'Vitamin C', time: '18:00', dose: '1000mg', qty: '2 Pil' },
 ]
+
+const schedules = ref([...mockSchedules])
+
+const fetchSchedules = async () => {
+  const use_backend = localStorage.getItem('use_backend') === 'true'
+  if (use_backend) {
+    try {
+      const response = await fetch(`${base_url}/api/schedules`)
+      const data = await response.json()
+      schedules.value = data
+    } catch (e) {
+      console.error("Failed to fetch schedules from backend:", e)
+      schedules.value = [...mockSchedules]
+    }
+  } else {
+    schedules.value = [...mockSchedules]
+  }
+}
+
+onMounted(() => {
+  fetchSchedules()
+  window.addEventListener('use-backend-changed', fetchSchedules)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('use-backend-changed', fetchSchedules)
+})
 </script>
 
 <template>
