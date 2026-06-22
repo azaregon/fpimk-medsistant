@@ -13,10 +13,11 @@ const router = createRouter({
     {
       path: '/histori',
       name: 'histori',
-      component: () => import('../views/Histori/List/HIstoriList.vue'),
+      component: () => import('../views/Histori/List/HIstoriList.vue'), // Perhatikan huruf besar 'I' pada HIstoriList, pastikan sesuai dengan nama file Anda
     },
     {
-      path: '/histori/item',
+      // Menggunakan parameter :id untuk histori spesifik
+      path: '/histori/:id',
       name: 'histori-item',
       component: () => import('../views/Histori/Detail/HistoriDetail.vue'),
     },
@@ -26,9 +27,10 @@ const router = createRouter({
       component: () => import('../views/Jadwal/List/JadwalList.vue'),
     },
     {
-      path: '/jadwal/item',
+      // Menggunakan parameter :id dan menghubungkan ke komponen JadwalDetail.vue
+      path: '/jadwal/:id',
       name: 'jadwal-item',
-      // component: () => import('../views/AboutView.vue'),
+      component: () => import('../views/Jadwal/Detail/JadwalDetail.vue'),
     },
     {
       path: '/camera',
